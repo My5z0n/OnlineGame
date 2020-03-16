@@ -1,6 +1,12 @@
 import pygame
+from enum import Enum
 from pygame.math import Vector2
+from Game_Entity import GameEntity
 
+
+class PlayerColors(Enum):
+    RED = (199, 8, 8)
+    BLUE = (8, 62, 199)
 
 class GamePlayer:
 
@@ -8,7 +14,7 @@ class GamePlayer:
         self.lastconrol = {"w": 0, "a": 0, "s": 0, "d": 0}
         self.game = game
         self.box = pygame.Rect(10, 10, 50, 50)
-        self.color = (0, 150, 255)
+        self.color = color
         self.pos = Vector2(10, 10)
         self.vel = Vector2(0, 0)
 
@@ -29,4 +35,4 @@ class GamePlayer:
             self.vel.x -= 4
 
     def draw(self):
-        pygame.draw.rect(self.game.DISPLAY_SURFACE, self.color, self.box)
+        pygame.draw.rect(self.game.DISPLAY_SURFACE, self.color.value, self.box)

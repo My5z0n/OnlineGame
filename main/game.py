@@ -23,7 +23,7 @@ class Game(object):
         self.tmpcontrol={"w": 0, "a": 0, "s": 0, "d": 0}
         self.lastconrol2 = {"w": 0, "a": 0, "s": 0, "d": 0}
 
-        self.player1 = gp.GamePlayer(self)
+        self.player1 = gp.GamePlayer(self,gp.PlayerColors.RED)
 
         while True:
             for event in pygame.event.get():
