@@ -8,7 +8,6 @@ class PlayerColors(Enum):
     RED = (199, 8, 8)
     BLUE = (8, 62, 199)
 
-class GamePlayer:
 
 class GamePlayer(GameEntity):
 
@@ -26,8 +25,8 @@ class GamePlayer(GameEntity):
         self.box.center = self.pos
 
     def update(self):
-        self.vel.x=0
-        self.vel.y=0
+        self.vel.x = 0
+        self.vel.y = 0
         if self.lastconrol["d"]:
             self.vel.x += 4
         if self.lastconrol["s"]:
