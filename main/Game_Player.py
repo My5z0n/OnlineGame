@@ -10,7 +10,9 @@ class PlayerColors(Enum):
 
 class GamePlayer:
 
-    def __init__(self, game):
+class GamePlayer(GameEntity):
+
+    def __init__(self, game,color):
         self.lastconrol = {"w": 0, "a": 0, "s": 0, "d": 0}
         self.game = game
         self.box = pygame.Rect(10, 10, 50, 50)
