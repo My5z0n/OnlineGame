@@ -12,7 +12,8 @@ class GamePlayer:
 
 class GamePlayer(GameEntity):
 
-    def __init__(self, game,color):
+    def __init__(self, game, color):
+        super().__init__()
         self.lastconrol = {"w": 0, "a": 0, "s": 0, "d": 0}
         self.game = game
         self.box = pygame.Rect(10, 10, 50, 50)
