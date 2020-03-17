@@ -1,28 +1,25 @@
 import pygame
-from enum import Enum
-from pygame.math import Vector2
 from Game_Entity import GameEntity
+from Wall import Wall
 
 
-class PlayerColors(Enum):
-    RED = (199, 8, 8)
-    BLUE = (8, 62, 199)
-
-
+#Glowa klasa gracza
 class GamePlayer(GameEntity):
 
-    def __init__(self, game, color):
-        super().__init__()
+    def __init__(self, game, color, x, y):
+        super().__init__(game, 1, pygame.Rect(x, y, 50, 50), color, x, y)
         self.lastconrol = {"w": 0, "a": 0, "s": 0, "d": 0}
-        self.game = game
-        self.box = pygame.Rect(10, 10, 50, 50)
-        self.color = color
-        self.pos = Vector2(10, 10)
-        self.vel = Vector2(0, 0)
 
     def tick(self):
         self.pos += self.vel
-        self.box.center = self.pos
+        self.drawable.center = self.pos
+
+        for colid in self.game.gameEntitiesArray:
+            if colid != self:
+                if isinstance(colid, Wall) or isinstance(colid, GamePlayer):
+                    if self.drawable.colliderect(colid.drawable):
+                        self.pos -=self.vel
+                        self.drawable.center = self.pos
 
     def update(self):
         self.vel.x = 0
@@ -35,6 +32,3 @@ class GamePlayer(GameEntity):
             self.vel.y -= 4
         if self.lastconrol["a"]:
             self.vel.x -= 4
-
-    def draw(self):
-        pygame.draw.rect(self.game.DISPLAY_SURFACE, self.color.value, self.box)

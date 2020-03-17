@@ -4,7 +4,7 @@ import pygame, sys
 from pygame.locals import *
 
 
-def game2(control1,control2):
+def game2(control1, control2):
     max_tps = 70.0
 
     pygame.init()
@@ -25,8 +25,6 @@ def game2(control1,control2):
         while delta > 1 / max_tps:
             delta -= 1 / max_tps
 
-
-
             changed = 0
             keys = pygame.key.get_pressed()
             if lastconrol["d"] != keys[pygame.K_d]:
@@ -46,6 +44,6 @@ def game2(control1,control2):
                 print("Wysylam sygnal od usera z klawiatury:")
                 print(lastconrol)
                 try:
-                    control1.put(lastconrol,block=False)
+                    control1.put(lastconrol, block=False)
                 except queue.Empty:
                     raise Exception("Cos sie zepsulo")
