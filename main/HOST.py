@@ -2,7 +2,7 @@ import socket  # Import socket module
 import pickle
 from threading import Thread
 from queue import Queue
-
+HEADERSIZE= 10
 
 # Klasa sluzy do obslugiwania nawiazanego polaczenia
 class MySocket:
@@ -15,7 +15,9 @@ class MySocket:
     # obsluga wysylan
     def sending(self):
         while 1:
-            data = self.c.recv(8192)
+            data = self.c.recv(HEADERSIZE)
+            datalen = int(data[:HEADERSIZE])
+            data = self.c.recv(datalen)
             self.toreceive.put(data)
 
     # obsluga pobran danych

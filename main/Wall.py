@@ -7,11 +7,9 @@ from Game_Entity import GameEntity, PlayerColors
 #Sciana jak jest kazdy widzi
 class Wall(GameEntity):
 
-    def __init__(self, game, x, y, w, h):
-        super().__init__(game, 0,pygame.Rect(x, y, w, h),PlayerColors.WHITE,x,y)
+    def __init__(self, x, y, w, h):
+        super().__init__(0,pygame.Rect(x, y, w, h),PlayerColors.WHITE,x,y)
 
-    def tick(self):
+    def tick(self, gameEntitiesNonMovable, gameEntitiesMovable):
         pass
 
-    def draw(self):
-        pygame.draw.rect(self.game.DISPLAY_SURFACE, self.color.value, self.drawable)

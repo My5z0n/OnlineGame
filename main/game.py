@@ -1,3 +1,5 @@
+import copy
+import pickle
 import queue
 import pygame, sys
 from pygame.locals import *
@@ -9,16 +11,16 @@ from Wall import Wall
 
 class Game(object):
 
-    def __init__(self, userInput1, userInput2):
+    def __init__(self, userInput1, userInput2,gameoutput):
         # Ustawiamy nasze kolejki od obu graczy
         # Zawieraja one sterowanie jakie wykonal gracz
         # w postaci slownika self.tmpcontrol = {"w": 0, "a": 0, "s": 0, "d": 0}
         # gdzie 1 to wcisniety guzik a 0 brak wcisniecia
         self.userInput1 = userInput1
         self.userInput2 = userInput2
-
+        self.gameoutput = gameoutput
         # maksymalna liczka klatek
-        self.tps_max = 100.0
+        self.tps_max = 60.0
 
         # odpalamy srodowisko i tworzymy okno
         pygame.init()
@@ -33,36 +35,44 @@ class Game(object):
         # tablice na wszystkie elementy gry
         self.gameEntitiesArray = []
         self.gamePlayersArray = []
+        self.gameEntetiesNomovable = []
 
         # dodajemy 1 gracza
-        self.player1 = GamePlayer(self, PlayerColors.RED, 300, 60)
+        self.player1 = GamePlayer(PlayerColors.RED, 300, 60)
         self.gameEntitiesArray.append(self.player1)
         self.gamePlayersArray.append(self.player1)
 
         # dodajemy 2 gracza
-        self.player2 = GamePlayer(self, PlayerColors.BLUE, 300, 440)
+        self.player2 = GamePlayer( PlayerColors.BLUE, 300, 440)
         self.gameEntitiesArray.append(self.player2)
         self.gamePlayersArray.append(self.player2)
 
         # dodajemy sciany
-        self.tmpobj = Wall(self, 100, 100, 300, 20)
+        self.tmpobj = Wall( 100, 100, 300, 20)
         self.gameEntitiesArray.append(self.tmpobj)
+        self.gameEntetiesNomovable.append(self.tmpobj)
 
-        self.tmpobj = Wall(self, 100, 350, 300, 20)
+        self.tmpobj = Wall (100, 350, 300, 20)
         self.gameEntitiesArray.append(self.tmpobj)
+        self.gameEntetiesNomovable.append(self.tmpobj)
 
-        self.tmpobj = Wall(self, 0, 0, 20, 500)
+        self.tmpobj = Wall( 0, 0, 20, 500)
         self.gameEntitiesArray.append(self.tmpobj)
+        self.gameEntetiesNomovable.append(self.tmpobj)
 
-        self.tmpobj = Wall(self, 480, 0, 20, 500)
+        self.tmpobj = Wall(480, 0, 20, 500)
         self.gameEntitiesArray.append(self.tmpobj)
+        self.gameEntetiesNomovable.append(self.tmpobj)
 
-        self.tmpobj = Wall(self, 0, 0, 500, 20)
+        self.tmpobj = Wall( 0, 0, 500, 20)
         self.gameEntitiesArray.append(self.tmpobj)
+        self.gameEntetiesNomovable.append(self.tmpobj)
 
-        self.tmpobj = Wall(self, 0, 480, 500, 20)
+        self.tmpobj = Wall( 0, 480, 500, 20)
         self.gameEntitiesArray.append(self.tmpobj)
+        self.gameEntetiesNomovable.append(self.tmpobj)
 
+        self.flag=-1
         #Glowna petla gry tu dzieje sia cala gra
         while True:
             #sprawdzacz zdarzen i ich obslugi w tym wypatku tylko zamkniecie okna by dalo sie apke normalnie zamkac
@@ -90,24 +100,42 @@ class Game(object):
         try:
             self.player1.lastconrol = self.userInput1.get(block=False)
             self.player1.update()
+            self.flag = 1
         except queue.Empty:
             pass
         try:
             self.player2.lastconrol = self.userInput2.get(block=False)
             self.player2.update()
+            self.flag = 1
         except queue.Empty:
             pass
 
     # tu rzeczy sie wynuja w scisle okreslonym tempie jak poruszanie
     def tick(self):
         for x in self.gameEntitiesArray:
-            x.tick()
+            x.tick(self.gameEntetiesNomovable,self.gamePlayersArray)
+
+
+        if self.flag==-1:
+            try:
+                self.gameoutput.put(self.gameEntetiesNomovable, block=False)
+            except queue.Empty:
+                raise Exception("Cos sie zepsulo przy wysylaniu arrayentity")
+        if self.flag ==1:
+            try:
+                self.gameoutput.put(self.gamePlayersArray ,block=False)
+                self.flag=0
+
+            except queue.Empty:
+                raise Exception("Cos sie zepsulo przy wysylaniu arrayentity")
+
+
 
     # tu rysujemy wszystkie obiekty ktore powinny znalesc sie na naszej planszy
     def draw(self):
         for x in self.gameEntitiesArray:
-            x.draw()
+            x.draw(self.DISPLAY_SURFACE)
 
 #funkcja tylko do stworzenia klasy i jej odpalenia
-def game(control1, control2):
-    Game(control1, control2)
+def game(control1, control2,gameoutput):
+    Game(control1, control2,gameoutput)

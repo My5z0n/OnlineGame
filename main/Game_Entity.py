@@ -11,8 +11,7 @@ class PlayerColors(Enum):
 
 #abstakcyjna klasa wszystkie obekty w grze dziedzicza po niej
 class GameEntity:
-    def __init__(self,game,movable,drawable,color,x,y,exists=1):
-        self.game = game
+    def __init__(self,movable,drawable,color,x,y,exists=1):
         self.id=uuid.uuid1()
         self.drawable=drawable
         self.pos = Vector2(x, y)
@@ -21,8 +20,8 @@ class GameEntity:
         self.color=color
         self.exists=exists
 
-    def draw(self):
-        pygame.draw.rect(self.game.DISPLAY_SURFACE, self.color.value, self.drawable)
+    def draw(self,DISPLAY_SURFACE):
+        pygame.draw.rect(DISPLAY_SURFACE, self.color.value, self.drawable)
 
-    def tick(self):
+    def tick(self,gameEntitiesNonMovable,gameEntitiesMovable):
         pass

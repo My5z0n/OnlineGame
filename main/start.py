@@ -7,6 +7,7 @@ import queue
 import HOST
 import game
 
+HEADERSIZE= 10
 
 #Glowna klasa odpowiedzialna za zarzadzanie cala reszta
 def main():
@@ -26,9 +27,13 @@ def main():
     #tworzymy dodatkowe 2 kolejki tym razem do komunikacji bezposiernio z gra
     control1 = queue.Queue()
     control2 = queue.Queue()
+    #do tej kolejki bedzie trafialo wyjscie z serwera
+    output = queue.Queue()
     #odpalamy gre
-    t2 = Thread(target=game.game, args=(control1, control2))
+    t2 = Thread(target=game.game, args=(control1, control2,output))
     t2.start()
+
+
     #ponizej sprawdzamy czy w kolejce pojawily sie jakies odebrane dane jesli tak dekodujemy je i wysylamy dalej
     while True:
         try:
@@ -41,6 +46,14 @@ def main():
             data = r2.get(block=False)
             new_contol = pickle.loads(data)
             control2.put(new_contol)
+        except queue.Empty:
+            pass
+        try:
+            data = output.get(block=False)
+            binary = pickle.dumps(data)
+            binary = bytes(f"{len(binary):<{HEADERSIZE}}", 'utf-8') + binary
+            s1.put(binary)
+            s2.put(binary)
         except queue.Empty:
             pass
 

@@ -6,15 +6,21 @@ from Wall import Wall
 #Glowa klasa gracza
 class GamePlayer(GameEntity):
 
-    def __init__(self, game, color, x, y):
-        super().__init__(game, 1, pygame.Rect(x, y, 50, 50), color, x, y)
+    def __init__(self, color, x, y):
+        super().__init__(1, pygame.Rect(x, y, 50, 50), color, x, y)
         self.lastconrol = {"w": 0, "a": 0, "s": 0, "d": 0}
 
-    def tick(self):
+    def tick(self, gameEntitiesNonMovable, gameEntitiesMovable):
         self.pos += self.vel
         self.drawable.center = self.pos
 
-        for colid in self.game.gameEntitiesArray:
+        for colid in gameEntitiesNonMovable:
+            if colid != self:
+                if isinstance(colid, Wall) or isinstance(colid, GamePlayer):
+                    if self.drawable.colliderect(colid.drawable):
+                        self.pos -=self.vel
+                        self.drawable.center = self.pos
+        for colid in gameEntitiesMovable:
             if colid != self:
                 if isinstance(colid, Wall) or isinstance(colid, GamePlayer):
                     if self.drawable.colliderect(colid.drawable):
