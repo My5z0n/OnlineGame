@@ -3,22 +3,24 @@ import pickle
 import time
 from threading import Thread
 import queue
+import _thread
 import CLIENT
 import user_input
+from MyQueue import MyQueue
 
 HEADERSIZE= 10
 
-s1 = queue.Queue()
-r1 = queue.Queue()
-t1 = Thread(target=CLIENT.start, args=(s1, r1))
-t1.start()
+s1 = MyQueue()
+r1 = MyQueue()
+t1 = _thread.start_new_thread(CLIENT.start,(s1, r1))
+#t1.start()
 
-nowa = queue.Queue()
-nowa2 = queue.Queue()
+nowa = MyQueue()
+nowa2 = MyQueue()
 
-hostdata = queue.Queue()
-t2 = Thread(target=user_input.game2, args=(nowa, nowa2,hostdata))
-t2.start()
+hostdata = MyQueue()
+t2 = _thread.start_new_thread(user_input.game2, (nowa, nowa2,hostdata))
+#t2.start()
 while True:
     try:
         data = nowa.get(block=False)

@@ -87,6 +87,8 @@ class Game(object):
                 self.tick()
                 self.tps_delta -= 1 / self.tps_max
 
+
+            self.send()
             #Aktualizujemy graczy
             self.playerUpdate()
             #Czyscimy ekran i go wyswietlamy
@@ -116,15 +118,21 @@ class Game(object):
             x.tick(self.gameEntetiesNomovable,self.gamePlayersArray)
 
 
-        if self.flag==-1:
+    def send(self):
+        if self.flag == -1:
             try:
                 self.gameoutput.put(self.gameEntetiesNomovable, block=False)
             except queue.Empty:
                 raise Exception("Cos sie zepsulo przy wysylaniu arrayentity")
-        if self.flag ==1:
             try:
-                self.gameoutput.put(self.gamePlayersArray ,block=False)
-                self.flag=0
+                self.gameoutput.put(self.gamePlayersArray, block=False)
+            except queue.Empty:
+                raise Exception("Cos sie zepsulo przy wysylaniu arrayentity")
+            self.flag = 1
+        if self.flag == 1:
+            try:
+                self.gameoutput.put(self.gamePlayersArray, block=False)
+                self.flag = 0
 
             except queue.Empty:
                 raise Exception("Cos sie zepsulo przy wysylaniu arrayentity")

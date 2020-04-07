@@ -38,3 +38,4 @@ class GamePlayer(GameEntity):
             self.vel.y -= 4
         if self.lastconrol["a"]:
             self.vel.x -= 4
+

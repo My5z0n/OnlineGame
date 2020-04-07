@@ -1,10 +1,8 @@
 import queue
-import pygame, sys
-from pygame.locals import *
 
-from Game_Entity import PlayerColors
-from Game_Player import GamePlayer
-from Wall import Wall
+import pygame
+import sys
+from pygame.locals import *
 
 
 class Game(object):
@@ -47,10 +45,10 @@ class Game(object):
                     pygame.quit()
                     sys.exit()
 
+            self.getfromhost()
             # W tej petli rzeczy sie dzieja w ograniczonej przez nas ilosci klatek na sekunde
             self.tps_delta += self.tps_clock.tick() / 1000.0
             while self.tps_delta > 1 / self.tps_max:
-                self.getfromhost()
                 self.tick()
                 self.tps_delta -= 1 / self.tps_max
 
@@ -65,9 +63,6 @@ class Game(object):
             try:
                 data = self.hostoutput.get(block=False)
                 self.gameEntitiesNonmovable = data
-                self.flag=1
-
-
             except queue.Empty:
                 pass
             try:
@@ -76,6 +71,7 @@ class Game(object):
 
             except queue.Empty:
                 pass
+            self.flag = 1
         else:
             try:
                 data = self.hostoutput.get(block=False)
@@ -86,7 +82,6 @@ class Game(object):
 
     # tu rzeczy sie wynuja w scisle okreslonym tempie jak poruszanie
     def tick(self):
-        self.getfromhost()
         changed = 0
         keys = pygame.key.get_pressed()
         if self.lastcontrol["d"] != keys[pygame.K_d]:

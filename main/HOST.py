@@ -1,3 +1,5 @@
+import _thread
+import queue
 import socket  # Import socket module
 import pickle
 from threading import Thread
@@ -23,16 +25,19 @@ class MySocket:
     # obsluga pobran danych
     def receiving(self):
         while 1:
-            data = self.tosend.get()
-            self.c.send(data)
+            try:
+                data = self.tosend.get(block=True)
+                self.c.send(data)
+            except queue.Empty:
+                pass
 
     # Po odpaleniu watku najpierw pojdzie tutaj
     def run(self):
         # tworzymy watki do odbierania danych i ich wysylania
-        t1 = Thread(target=self.sending, args=())
-        t2 = Thread(target=self.receiving, args=())
-        t1.start()
-        t2.start()
+        t1 = _thread.start_new_thread(self.sending, ())
+        t2 = _thread.start_new_thread(self.receiving, ())
+        #t1.start()
+        #t2.start()
 
 
 def start(tosend1, toreceive1, tosend2, toreceive2):
@@ -54,11 +59,11 @@ def start(tosend1, toreceive1, tosend2, toreceive2):
     # Ustawilismy polaczenie przekazujemy do innego watku ktory zaraz utworzymy by obslugiwal komunikacje
     # A my pojdziemy dalej
     x = MySocket(c, addr, tosend1, toreceive1)  # stworz obiekt klasy
-    t1 = Thread(target=x.run)  # stworz watek
-    t1.start()  # odpal watek
+    t1 = _thread.start_new_thread(x.run,())  # stworz watek
+   # t1.start()  # odpal watek
 
     c, addr = s.accept()  # Robimy to samo tylko z 2 klientem
     print('Connected to :', addr[0], ':', addr[1])
     x = MySocket(c, addr, tosend2, toreceive2)
-    t1 = Thread(target=x.run)
-    t1.start()
+    t1 = _thread.start_new_thread(x.run,())
+   #t1.start()
