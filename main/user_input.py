@@ -1,8 +1,13 @@
+import copy
 import queue
+import time
 
 import pygame
 import sys
 from pygame.locals import *
+
+from Game_Entity import PlayerColors
+from Game_Player import GamePlayer
 
 
 class Game(object):
@@ -18,8 +23,9 @@ class Game(object):
         # maksymalna liczka klatek
         self.tps_max = 60.0
 
-        self.lastcontrol = {"w": 0, "a": 0, "s": 0, "d": 0}
-
+        self.lastcontrol = {"w": 0, "a": 0, "s": 0, "d": 0, "r": 0, "l": 0,"f":0}
+        self.data_array = []
+        self.nowdata = None
         # odpalamy srodowisko i tworzymy okno
         pygame.init()
         pygame.display.set_caption('CLIENT')
@@ -35,7 +41,14 @@ class Game(object):
         self.gamePlayersArray = []
         self.gameEntitiesNonmovable = []
 
+        # gracz referencyjny
+        self.player = GamePlayer(PlayerColors.RED, 300, 60, 0,None)
+        self.gameEntitiesArray.append(self.player)
+        self.gamePlayersArray.append(self.player)
+
         self.flag = 0
+        self.mydata = None
+        self.lastupdate = 0
 
         # Glowna petla gry tu dzieje sia cala gra
         while True:
@@ -59,24 +72,18 @@ class Game(object):
 
     # tu rzeczy sie wynuja w scisle okreslonym tempie jak poruszanie
     def getfromhost(self):
-        if self.flag ==0:
+
+        if self.flag == 0:
             try:
                 data = self.hostoutput.get(block=False)
                 self.gameEntitiesNonmovable = data
-            except queue.Empty:
-                pass
-            try:
-                data = self.hostoutput.get(block=False)
-                self.gamePlayersArray = data
-
             except queue.Empty:
                 pass
             self.flag = 1
         else:
             try:
                 data = self.hostoutput.get(block=False)
-                self.gamePlayersArray = data
-
+                self.data_array.append(data)
             except queue.Empty:
                 pass
 
@@ -96,6 +103,15 @@ class Game(object):
         if self.lastcontrol["w"] != keys[pygame.K_w]:
             self.lastcontrol["w"] = keys[pygame.K_w]
             changed = 1
+        if self.lastcontrol["r"] != keys[pygame.K_RIGHT]:
+            self.lastcontrol["r"] = keys[pygame.K_RIGHT]
+            changed = 1
+        if self.lastcontrol["l"] != keys[pygame.K_LEFT]:
+            self.lastcontrol["l"] = keys[pygame.K_LEFT]
+            changed = 1
+        if self.lastcontrol["f"] != keys[pygame.K_SPACE]:
+            self.lastcontrol["f"] = keys[pygame.K_SPACE]
+            changed = 1
 
         if changed:
             print("Wysylam sygnal od usera z klawiatury:")
@@ -105,17 +121,31 @@ class Game(object):
             except queue.Empty:
                 raise Exception("Cos sie zepsulo")
 
-
-        for x in self.gamePlayersArray:
-            x.tick(self.gameEntitiesNonmovable,self.gamePlayersArray)
+    # for x in self.gamePlayersArray:
+    #  x.tick(self.gameEntitiesNonmovable,self.gamePlayersArray)
 
     # tu rysujemy wszystkie obiekty ktore powinny znalesc sie na naszej planszy
     def draw(self):
         for x in self.gameEntitiesNonmovable:
             x.draw(self.DISPLAY_SURFACE)
-        for x in self.gamePlayersArray:
-            x.draw(self.DISPLAY_SURFACE)
 
+        if len(self.data_array) != 0:
+            if self.data_array[0][1] + 0.2 <= time.time():
+                self.nowdata = self.data_array.pop(0)
+            elif self.nowdata is not None:
+                nowdata3 = self.data_array[0]
+                nowdata2 = copy.copy(self.nowdata)
+                for i in range(len(nowdata2)):
+                    if nowdata2[0][i][0] == nowdata3[0][i][0]:
+                        nowdata2[0][i][1].x = int((nowdata2[0][i][1].x + nowdata3[0][i][1].x) / 2)
+                        nowdata2[0][i][1].y = int((nowdata2[0][i][1].y + nowdata3[0][i][1].y) / 2)
+                self.nowdata = nowdata2
+
+        if self.nowdata is not None:
+            for xxx in self.nowdata[0]:
+                if xxx[0] == 1 or xxx[0] == 2:
+                    self.player.setdata(xxx)
+                    self.player.draw(self.DISPLAY_SURFACE)
 
 
 # funkcja tylko do stworzenia klasy i jej odpalenia
