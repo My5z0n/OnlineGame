@@ -17,7 +17,7 @@ class Game(object):
     def __init__(self, userInput1, userInput2, gameoutput):
         # Ustawiamy nasze kolejki od obu graczy
         # Zawieraja one sterowanie jakie wykonal gracz
-        # w postaci slownika self.tmpcontrol = {"w": 0, "a": 0, "s": 0, "d": 0}
+        # w postaci slownika self.tmpcontrol = {"w": 0, "a": 0, "s": 0, "d": 0, "r": 0, "l": 0, "f": 0} }
         # gdzie 1 to wcisniety guzik a 0 brak wcisniecia
         self.idnum = 1
         self.userInput1 = userInput1
@@ -32,68 +32,60 @@ class Game(object):
         print("Game Runs!")
         self.DISPLAY_SURFACE = pygame.display.set_mode((500, 500))
 
-        # przydatne do okreslenia maksymalnej liczny klatek
+        # przydatne do okreslenia maksymalnej liczby klatek
         self.tps_clock = pygame.time.Clock()
         self.tps_delta = 0.0
 
         # tablice na wszystkie elementy gry
         self.gameEntitiesArray = []
         self.gamePlayersArray = []
-        self.gameEntetiesNomovable = []
-
-
+        self.gameEntitiesNomovable = []
 
         self.tmpobj = Bullet.Bullet(PlayerColors.RED, 250, 250, 3)
         self.tmpobj.set_start(1, 0, (60, 60))
         self.gameEntitiesArray.append(self.tmpobj)
-        self.gameEntetiesNomovable.append(self.tmpobj)
+        # self.gameEntitiesNomovable.append(self.tmpobj)
 
         # dodajemy 1 gracza
-        self.player1 = GamePlayer(PlayerColors.RED, 300, 60, 1,self.tmpobj)
+        self.player1 = GamePlayer(PlayerColors.RED, 300, 60, 1, self.tmpobj)
         self.gameEntitiesArray.append(self.player1)
         self.gamePlayersArray.append(self.player1)
         self.idnum += 1
 
-
-
-
         self.tmpobj = Bullet.Bullet(PlayerColors.BLUE, 250, 250, 4)
         self.tmpobj.set_start(1, 0, (50, 50))
         self.gameEntitiesArray.append(self.tmpobj)
-        self.gameEntetiesNomovable.append(self.tmpobj)
+        # self.gameEntitiesNomovable.append(self.tmpobj)
 
         # dodajemy 2 gracza
-        self.player2 = GamePlayer(PlayerColors.BLUE, 300, 440, 2,self.tmpobj)
+        self.player2 = GamePlayer(PlayerColors.BLUE, 300, 440, 2, self.tmpobj)
         self.gameEntitiesArray.append(self.player2)
         self.gamePlayersArray.append(self.player2)
-
-
-
 
         # dodajemy sciany
         self.tmpobj = Wall(100, 100, 300, 20)
         self.gameEntitiesArray.append(self.tmpobj)
-        self.gameEntetiesNomovable.append(self.tmpobj)
+        self.gameEntitiesNomovable.append(self.tmpobj)
 
         self.tmpobj = Wall(100, 350, 300, 20)
         self.gameEntitiesArray.append(self.tmpobj)
-        self.gameEntetiesNomovable.append(self.tmpobj)
+        self.gameEntitiesNomovable.append(self.tmpobj)
 
         self.tmpobj = Wall(0, 0, 20, 500)
         self.gameEntitiesArray.append(self.tmpobj)
-        self.gameEntetiesNomovable.append(self.tmpobj)
+        self.gameEntitiesNomovable.append(self.tmpobj)
 
         self.tmpobj = Wall(480, 0, 20, 500)
         self.gameEntitiesArray.append(self.tmpobj)
-        self.gameEntetiesNomovable.append(self.tmpobj)
+        self.gameEntitiesNomovable.append(self.tmpobj)
 
         self.tmpobj = Wall(0, 0, 500, 20)
         self.gameEntitiesArray.append(self.tmpobj)
-        self.gameEntetiesNomovable.append(self.tmpobj)
+        self.gameEntitiesNomovable.append(self.tmpobj)
 
         self.tmpobj = Wall(0, 480, 500, 20)
         self.gameEntitiesArray.append(self.tmpobj)
-        self.gameEntetiesNomovable.append(self.tmpobj)
+        self.gameEntitiesNomovable.append(self.tmpobj)
 
         self.flag = -1
 
@@ -143,28 +135,29 @@ class Game(object):
     # tu rzeczy sie wynuja w scisle okreslonym tempie jak poruszanie
     def tick(self):
         for x in self.gameEntitiesArray:
-            x.tick(self.gameEntetiesNomovable, self.gamePlayersArray)
+            x.tick(self.gameEntitiesNomovable, self.gamePlayersArray)
 
     def send(self):
         if self.flag == -1:
             try:
-                self.gameoutput.put(self.gameEntetiesNomovable, block=False)
+                self.gameoutput.put(self.gameEntitiesNomovable, block=False)
             except queue.Empty:
-                raise Exception("Cos sie zepsulo przy wysylaniu arrayentity")
+                raise Exception("Cos sie zepsulo przy wysylaniu array entity")
             self.flag = 0
         if self.flag == 1:
             try:
                 array = []
-
                 for x in self.gamePlayersArray:
-                    xx = x.getdata()
+                    xx = x.getdata()    # pobiera dane każdego gracza
+                    array.append(xx)
+                    xx = x.bullet.getdata()
                     array.append(xx)
 
                 self.gameoutput.put((array, time.time()), block=False)
                 # self.gameoutput.put(self.gamePlayersArray, block=False)
 
             except queue.Empty:
-                raise Exception("Cos sie zepsulo przy wysylaniu arrayentity")
+                raise Exception("Cos sie zepsulo przy wysylaniu array entity")
 
     # tu rysujemy wszystkie obiekty ktore powinny znalesc sie na naszej planszy
     def draw(self):

@@ -35,8 +35,7 @@ class MySocket:
     def run(self):
         t1 = _thread.start_new_thread(self.sending, ())
         t2 = _thread.start_new_thread(self.receiving, ())
-       # t1.start()
-      #  t2.start()
+
 
 
 def start(tosend1, toreceive1):
@@ -52,4 +51,3 @@ def start(tosend1, toreceive1):
     s.connect((host, port))
     x = MySocket(s, host, tosend1, toreceive1)
     t1 = _thread.start_new_thread(x.run,())
-    #t1.start()

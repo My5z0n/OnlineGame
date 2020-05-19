@@ -1,5 +1,5 @@
 import uuid
-from math import sin, cos
+from math import sin, cos, radians
 
 import pygame
 from enum import Enum
@@ -14,8 +14,8 @@ class PlayerColors(Enum):
 
 
 def rotate_point(cx, cy, angle, p):
-    s = sin((-1)*angle)
-    c = cos((-1)*angle)
+    s = sin((-1)*radians(angle))
+    c = cos((-1)*radians(angle))
 
     px = p[0]
     py = p[1]

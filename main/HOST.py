@@ -42,7 +42,7 @@ class MySocket:
 
 def start(tosend1, toreceive1, tosend2, toreceive2):
     print("Start")
-    # Uswatawianie połączenia
+    # Ustawianie połączenia
     s = socket.socket()  # Stworz socketa
     host = socket.gethostname()  # Weź nazwe swojej maszyny
     port = 12345  # Ustawiamy port

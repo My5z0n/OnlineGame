@@ -11,15 +11,16 @@ class GamePlayer(GameEntity):
         self.lastconrol = {"w": 0, "a": 0, "s": 0, "d": 0, "r": 0, "l": 0, "f": 0}
         self.rotation = 0
         self.bullet = bullet
+        self.health = 5
 
     def tick(self, gameEntitiesNonMovable, gameEntitiesMovable):
         self.pos += self.vel
         self.drawable.center = self.pos
 
         if self.lastconrol["r"]:
-            self.rotation += 1
-        if self.lastconrol["l"]:
             self.rotation -= 1
+        if self.lastconrol["l"]:
+            self.rotation += 1
 
         for colid in gameEntitiesNonMovable:
             if colid != self:
@@ -49,9 +50,8 @@ class GamePlayer(GameEntity):
             self.shoot()
 
     def shoot(self):
-        pos = (self.drawable.center[0], self.drawable.center[1] - 50)
-        dd = rotate_point(0, 0, self.rotation, (0,1))
-        self.bullet.set_start(int(dd[0]*10),int(dd[1]*10),self.drawable.center)
+        dd = rotate_point(0, 0, self.rotation, (0, 1))
+        self.bullet.set_start(int(dd[0] * 10), int(dd[1] * 10), self.drawable.center)
 
     def getdata(self):
         id = int(self.id)
@@ -76,7 +76,9 @@ class GamePlayer(GameEntity):
 
     def draw(self, DISPLAY_SURFACE):
         pygame.draw.rect(DISPLAY_SURFACE, self.color.value, self.drawable)
-        image_orig = pygame.Surface((25, 50))
+
+
+        image_orig = pygame.Surface((25, 50))  # lufa
         image_orig.fill((200, 200, 200))
         image_orig.set_colorkey((0, 0, 0))
         new_image = self.rotate(image_orig, (12, 0), self.rotation)
@@ -85,3 +87,5 @@ class GamePlayer(GameEntity):
         rect.center = (self.drawable.center[0], self.drawable.center[1])
         # pygame.draw.rect(DISPLAY_SURFACE, (200,200,200), rect)
         DISPLAY_SURFACE.blit(new_image, rect)
+
+        pygame.draw.rect(DISPLAY_SURFACE,(0,255,0),pygame.Rect(0,0,50,7),)

@@ -13,14 +13,13 @@ HEADERSIZE= 10
 s1 = MyQueue()
 r1 = MyQueue()
 t1 = _thread.start_new_thread(CLIENT.start,(s1, r1))
-#t1.start()
 
 nowa = MyQueue()
 nowa2 = MyQueue()
 
 hostdata = MyQueue()
 t2 = _thread.start_new_thread(user_input.game2, (nowa, nowa2,hostdata))
-#t2.start()
+
 while True:
     try:
         data = nowa.get(block=False)
