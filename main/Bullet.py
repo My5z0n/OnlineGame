@@ -12,7 +12,7 @@ class Bullet(GameEntity):
         self.lastconrol = {"w": 0, "a": 0, "s": 0, "d": 0, "r": 0, "l": 0, "f": 0}
         self.exists = 1
 
-    def tick(self, gameEntitiesNonMovable, gameEntitiesMovable):
+    def tick(self, gameEntitiesNonMovable, gameEntitiesMovable, gameOver):
         if self.exists != 0:
             self.pos += self.vel
             self.drawable.center = self.pos
@@ -31,6 +31,7 @@ class Bullet(GameEntity):
                             if self.color != colid.color:
                                 self.exists = 0
                                 print("Hit!")
+                                colid.health -= 1
                                 self.pos = (5, 5)
                                 self.drawable.center = self.pos
 

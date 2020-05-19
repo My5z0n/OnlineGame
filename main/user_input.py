@@ -131,6 +131,7 @@ class Game(object):
 
     # tu rysujemy wszystkie obiekty ktore powinny znalesc sie na naszej planszy
     def draw(self):
+
         for x in self.gameEntitiesNonmovable:
             x.draw(self.DISPLAY_SURFACE)
 
@@ -142,10 +143,13 @@ class Game(object):
                     0]  # wstawiamy nową daną, której nie rysujemy bo za wcześnie względem opóźnienia
                 nowdata2 = copy.copy(self.nowdata)  # zostawiamy kopie tej informacji
                 for i in range(len(nowdata2[0])):
+
                     if nowdata2[0][i][0] == nowdata3[0][i][0]:  # [0] - array, [i] - ity element, [0] - id
                         if nowdata2[0][i][0] == 3 or nowdata2[0][i][0] == 4:
-                            nowdata2[0][i] = (nowdata2[0][i][0], nowdata2[0][i][1], nowdata2[0][i][2],
-                                              nowdata3[0][i][3])  # przekopiowujemy informacje o exists
+                            if nowdata2[0][i][3] != 0:
+                                nowdata2[0][i] = (nowdata2[0][i][0], nowdata2[0][i][1], nowdata2[0][i][2],
+                                                  nowdata3[0][i][3])  # przekopiowujemy informacje o exists
+
                         nowdata2[0][i][1].x = int((nowdata2[0][i][1].x + nowdata3[0][i][1].x) / 2)  # [0][i][1] - pos
                         nowdata2[0][i][1].y = int((nowdata2[0][i][1].y + nowdata3[0][i][1].y) / 2)
 

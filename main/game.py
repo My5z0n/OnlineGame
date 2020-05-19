@@ -19,6 +19,7 @@ class Game(object):
         # Zawieraja one sterowanie jakie wykonal gracz
         # w postaci slownika self.tmpcontrol = {"w": 0, "a": 0, "s": 0, "d": 0, "r": 0, "l": 0, "f": 0} }
         # gdzie 1 to wcisniety guzik a 0 brak wcisniecia
+        self.gameOver = False
         self.idnum = 1
         self.userInput1 = userInput1
         self.userInput2 = userInput2
@@ -134,8 +135,12 @@ class Game(object):
 
     # tu rzeczy sie wynuja w scisle okreslonym tempie jak poruszanie
     def tick(self):
-        for x in self.gameEntitiesArray:
-            x.tick(self.gameEntitiesNomovable, self.gamePlayersArray)
+        if self.gameOver is False:
+            for x in self.gameEntitiesArray:
+                tmp = x.tick(self.gameEntitiesNomovable, self.gamePlayersArray, self.gameOver)
+                if tmp is True:
+                    self.gameOver = True
+                    break
 
     def send(self):
         if self.flag == -1:
@@ -148,7 +153,7 @@ class Game(object):
             try:
                 array = []
                 for x in self.gamePlayersArray:
-                    xx = x.getdata()    # pobiera dane każdego gracza
+                    xx = x.getdata()  # pobiera dane każdego gracza
                     array.append(xx)
                     xx = x.bullet.getdata()
                     array.append(xx)

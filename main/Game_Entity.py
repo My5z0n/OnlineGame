@@ -11,11 +11,12 @@ class PlayerColors(Enum):
     RED = (199, 8, 8)
     BLUE = (8, 62, 199)
     WHITE = (250, 250, 250)
+    GRAY = (128, 128, 128)
 
 
 def rotate_point(cx, cy, angle, p):
-    s = sin((-1)*radians(angle))
-    c = cos((-1)*radians(angle))
+    s = sin((-1) * radians(angle))
+    c = cos((-1) * radians(angle))
 
     px = p[0]
     py = p[1]
@@ -43,5 +44,5 @@ class GameEntity:
     def draw(self, DISPLAY_SURFACE):
         pygame.draw.rect(DISPLAY_SURFACE, self.color.value, self.drawable)
 
-    def tick(self, gameEntitiesNonMovable, gameEntitiesMovable):
+    def tick(self, gameEntitiesNonMovable, gameEntitiesMovable, gameOver):
         pass

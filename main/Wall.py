@@ -10,6 +10,6 @@ class Wall(GameEntity):
     def __init__(self, x, y, w, h):
         super().__init__(0,pygame.Rect(x, y, w, h),PlayerColors.WHITE,x,y,-1)
 
-    def tick(self, gameEntitiesNonMovable, gameEntitiesMovable):
+    def tick(self, gameEntitiesNonMovable, gameEntitiesMovable, gameOver):
         pass
 

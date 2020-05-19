@@ -13,27 +13,34 @@ class GamePlayer(GameEntity):
         self.bullet = bullet
         self.health = 5
 
-    def tick(self, gameEntitiesNonMovable, gameEntitiesMovable):
-        self.pos += self.vel
-        self.drawable.center = self.pos
+    def tick(self, gameEntitiesNonMovable, gameEntitiesMovable, gameOver):
+        if gameOver is False:
+            if self.health == 0:
+                gameOver = True
+                return gameOver
 
-        if self.lastconrol["r"]:
-            self.rotation -= 1
-        if self.lastconrol["l"]:
-            self.rotation += 1
+            self.pos += self.vel
+            self.drawable.center = self.pos
 
-        for colid in gameEntitiesNonMovable:
-            if colid != self:
-                if isinstance(colid, Wall) or isinstance(colid, GamePlayer):
-                    if self.drawable.colliderect(colid.drawable):
-                        self.pos -= self.vel
-                        self.drawable.center = self.pos
-        for colid in gameEntitiesMovable:
-            if colid != self:
-                if isinstance(colid, Wall) or isinstance(colid, GamePlayer):
-                    if self.drawable.colliderect(colid.drawable):
-                        self.pos -= self.vel
-                        self.drawable.center = self.pos
+            if self.lastconrol["r"]:
+                self.rotation -= 1
+            if self.lastconrol["l"]:
+                self.rotation += 1
+
+            for colid in gameEntitiesNonMovable:
+                if colid != self:
+                    if isinstance(colid, Wall) or isinstance(colid, GamePlayer):
+                        if self.drawable.colliderect(colid.drawable):
+                            self.pos -= self.vel
+                            self.drawable.center = self.pos
+            for colid in gameEntitiesMovable:
+                if colid != self:
+                    if isinstance(colid, Wall) or isinstance(colid, GamePlayer):
+                        if self.drawable.colliderect(colid.drawable):
+                            self.pos -= self.vel
+                            self.drawable.center = self.pos
+
+        return gameOver
 
     def update(self):
         self.vel.x = 0
@@ -58,8 +65,8 @@ class GamePlayer(GameEntity):
         pos = self.pos
         color = self.color
         angle = self.rotation
-
-        return (id, pos, color, angle)
+        health = self.health
+        return (id, pos, color, angle, health)
 
     def setdata(self, tuple):
         self.id = int(tuple[0])
@@ -67,6 +74,7 @@ class GamePlayer(GameEntity):
         self.color = tuple[2]
         self.drawable.center = self.pos
         self.rotation = tuple[3]
+        self.health = tuple[4]
 
     def rotate(self, img, pos, angle):
         w, h = img.get_size()
@@ -76,7 +84,6 @@ class GamePlayer(GameEntity):
 
     def draw(self, DISPLAY_SURFACE):
         pygame.draw.rect(DISPLAY_SURFACE, self.color.value, self.drawable)
-
 
         image_orig = pygame.Surface((25, 50))  # lufa
         image_orig.fill((200, 200, 200))
@@ -88,4 +95,16 @@ class GamePlayer(GameEntity):
         # pygame.draw.rect(DISPLAY_SURFACE, (200,200,200), rect)
         DISPLAY_SURFACE.blit(new_image, rect)
 
-        pygame.draw.rect(DISPLAY_SURFACE,(0,255,0),pygame.Rect(0,0,50,7),)
+        if (self.health > 0):
+            x = self.pos.x - 25
+            y = self.pos.y - 40
+            pygame.draw.rect(DISPLAY_SURFACE, (255, 0, 0), pygame.Rect(x, y, 50, 7), 0)
+            pygame.draw.rect(DISPLAY_SURFACE, (0, 255, 0), pygame.Rect(x, y, self.health * 10, 7), 0)
+        else:
+            self.color = PlayerColors.GRAY
+            font = pygame.font.Font("game_over.ttf", 72)
+            text = font.render("Game Over", True, (255, 255, 255))
+            text_rect = text.get_rect()
+            text_x = 250 - text_rect.width / 2
+            text_y = 250 - text_rect.height / 2
+            DISPLAY_SURFACE.blit(text, [text_x, text_y])
